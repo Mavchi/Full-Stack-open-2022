@@ -7,7 +7,7 @@ const Button = ({ onClick, text }) => (
   </button>
 )
 
-const Stats = ({ good, neutral, bad }) => (
+const Statistics = ({ good, neutral, bad }) => (
   <div>
     good {good} <br />
     neutral {neutral} <br />
@@ -35,7 +35,7 @@ const App = () => {
       <Button onClick={() => addNeutral()} text='neutral' />
       <Button onClick={() => addBad()} text='bad' />
       <h1>statistics</h1>
-      <Stats good={good} neutral={neutral} bad={bad} />
+      <Statistics good={good} neutral={neutral} bad={bad} />
     </div>
   )
 }
