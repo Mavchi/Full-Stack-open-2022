@@ -9,9 +9,12 @@ const Button = ({ onClick, text }) => (
 
 const Stats = ({ good, neutral, bad }) => (
   <div>
-    good {good} {' '}
-    neutral {neutral} {' '}
-    bad {bad} 
+    good {good} <br />
+    neutral {neutral} <br />
+    bad {bad} <br />
+    all {good+neutral+bad} <br />
+    average {((good*1)+(bad*-1))/(good+neutral+bad)} <br />
+    positive {good/((good+neutral+bad))*100} %
   </div>
 )
 
