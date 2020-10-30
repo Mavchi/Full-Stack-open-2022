@@ -7,22 +7,47 @@ const Button = ({onClick, text}) => (
   </button>
 )
 
-const Quote = ({ text }) => (
-  <p>
-    {text}
-  </p>
-)
+const Quote = ({ text, votes }) => {
+  if (votes == undefined){
+    return (
+      <p>
+        {text}<br/>
+        has 0 votes
+      </p>
+    )
+  }
+
+  return (
+    <p>
+      {text}<br/>
+      has {votes} votes
+    </p>
+  )
+}
 
 const App = (props) => {
   const [selected, setSelected] = useState(0)
+  const [votes, setVotes] = useState({})
+  //const points = { 0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 }
 
   const changeAnecdote = () => {
     setSelected(Math.floor(Math.random() * props.anecdotes.length))
   }
 
+  const changeVote = () => {
+    const copy = { ...votes }
+    if (selected in votes){
+      copy[selected] += 1
+    } else {
+      copy[selected] = 0
+    }
+    setVotes(copy)
+  }
+
   return (
     <div>
-      <Quote text={props.anecdotes[selected]}/>
+      <Quote text={props.anecdotes[selected]} votes={votes[selected]}/>
+      <Button onClick={changeVote} text='vote'/>
       <Button onClick={changeAnecdote} text='next anecdote'/>
     </div>
   )
