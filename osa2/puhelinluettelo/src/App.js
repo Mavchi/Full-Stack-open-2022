@@ -1,4 +1,4 @@
-// 2.6
+// 2.7
 import React, { useState } from 'react'
 
 const Person = ({ person }) => {
@@ -21,12 +21,19 @@ const App = () => {
 
   const addPhone = (event) =>{
       event.preventDefault()
-      const phoneObject = {
+      const personObject = {
           name: newName
       }
 
-      setPersons(persons.concat(phoneObject))
-      setNewName('')
+      let names = persons.map( person => person.name)
+      // Lisätään jos ei ole valmiiksi taulukossa
+      if (names.includes(personObject.name)){
+        setNewName('')
+        alert(`${newName} is already added to phonebook`)
+        } else {
+        setPersons(persons.concat(personObject))
+        setNewName('')
+        }
   }
 
   return (
