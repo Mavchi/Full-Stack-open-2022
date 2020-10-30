@@ -1,47 +1,57 @@
-// 2.7
+// 2.8
 import React, { useState } from 'react'
 
 const Person = ({ person }) => {
     return (
         <p>
-            {person.name}
+            {person.name} {person.number}
         </p>
     )
 }
 
 const App = () => {
-  const [ persons, setPersons] = useState([
-    { name: 'Arto Hellas' }
-  ]) 
+  const [ persons, setPersons] = useState([{ name: 'Arto Hellas', number: '040-1234567' }]) 
   const [ newName, setNewName ] = useState('')
+  const [ newNumber, setNewNumber] = useState('')
 
-  const HandlePhoneChange = (event) => {
+  const HandleNameChange = (event) => {
       setNewName(event.target.value)
   }
 
-  const addPhone = (event) =>{
+  const HandleNumberChange = (event) => {
+      setNewNumber(event.target.value)
+  }
+
+  const addPerson = (event) =>{
       event.preventDefault()
       const personObject = {
-          name: newName
+          name: newName,
+          number: newNumber
       }
 
-      let names = persons.map( person => person.name)
-      // Lisätään jos ei ole valmiiksi taulukossa
-      if (names.includes(personObject.name)){
-        setNewName('')
-        alert(`${newName} is already added to phonebook`)
+      if (newName.length===0 || newNumber.length===0){
+          alert('Name and number must not be empty!')
+      } else {
+        let names = persons.map( person => person.name)
+        // Lisätään jos ei ole valmiiksi taulukossa
+        if (names.includes(personObject.name)){
+          setNewName('')
+          alert(`${newName} is already added to phonebook`)
         } else {
-        setPersons(persons.concat(personObject))
-        setNewName('')
+          setPersons(persons.concat(personObject))
+          setNewName('')
         }
+        setNewNumber('')
+      }
   }
 
   return (
     <div>
       <h2>Phonebook</h2>
-      <form onSubmit={addPhone}>
+      <form onSubmit={addPerson}>
         <div>
-          name: <input value={newName} onChange={HandlePhoneChange}/>
+          name: <input value={newName} onChange={HandleNameChange}/><br/>
+          number: <input value={newNumber} onChange={HandleNumberChange}/>
         </div>
         <div>
           <button type="submit">add</button>
