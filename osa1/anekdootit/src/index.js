@@ -8,15 +8,6 @@ const Button = ({onClick, text}) => (
 )
 
 const Quote = ({ text, votes }) => {
-  if (votes == undefined){
-    return (
-      <p>
-        {text}<br/>
-        has 0 votes
-      </p>
-    )
-  }
-
   return (
     <p>
       {text}<br/>
@@ -25,10 +16,26 @@ const Quote = ({ text, votes }) => {
   )
 }
 
+const PopularQuote = ({ quotes, popular, votes })=> {
+  if (popular === -1){
+    return (
+      <p>
+        No quotes with votes!
+      </p>
+    )
+  }
+  return (
+    <p>
+      {quotes[popular]}<br/>
+      has {votes[popular]} votes
+    </p>
+  )
+}
+
 const App = (props) => {
   const [selected, setSelected] = useState(0)
-  const [votes, setVotes] = useState({})
-  //const points = { 0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 }
+  const [votes, setVotes] = useState({ 0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 })
+  const [popular, setPopular] = useState(-1)
 
   const changeAnecdote = () => {
     setSelected(Math.floor(Math.random() * props.anecdotes.length))
@@ -42,13 +49,27 @@ const App = (props) => {
       copy[selected] = 0
     }
     setVotes(copy)
+
+    let p = popular
+    if (p===-1){
+      p = selected
+    } else {
+      if( copy[selected] > copy[p] ){
+        p = selected
+      }
+    }
+    console.log(copy[selected])
+    setPopular(p)
   }
 
   return (
     <div>
+      <h1>Anecdote of the day</h1>
       <Quote text={props.anecdotes[selected]} votes={votes[selected]}/>
       <Button onClick={changeVote} text='vote'/>
       <Button onClick={changeAnecdote} text='next anecdote'/>
+      <h1>Anecdote with most votes</h1>
+      <PopularQuote quotes={props.anecdotes} popular={popular} votes={votes}/>
     </div>
   )
 }
