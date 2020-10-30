@@ -23,9 +23,14 @@ const Content = ({ parts }) => {
   )
 }
 
-const Total = ({ parts }) => (
-  <p>Number of exercises {parts[0].exercises+parts[1].exercises+parts[2].exercises}</p>
-)
+const Total = ({ parts }) => {
+  const values = parts.map( part => part.exercises )
+  const sum = (accumulator, currentValue) => accumulator+currentValue
+
+  return (
+    <p><strong>total of {values.reduce(sum)} exercises</strong></p>
+  )
+}
 
 const Course = ({ course }) => {
   return (
@@ -56,6 +61,11 @@ const App = () => {
         name: 'State of a component',
         exercises: 14,
         id: 3
+      },
+      {
+        name: 'Redux',
+        exercises: 11,
+        id: 4
       }
     ]
   }
