@@ -1,3 +1,4 @@
+// v2.3
 import React from 'react'
 import ReactDOM from 'react-dom'
 
@@ -25,7 +26,7 @@ const Content = ({ parts }) => {
 
 const Total = ({ parts }) => {
   const values = parts.map( part => part.exercises )
-  const sum = (accumulator, currentValue) => accumulator+currentValue
+  const sum = (accumulator, currentValue) => accumulator + currentValue
 
   return (
     <p><strong>total of {values.reduce(sum)} exercises</strong></p>
