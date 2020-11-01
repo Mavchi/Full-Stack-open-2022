@@ -2,16 +2,8 @@
 import React, {useState, useEffect} from 'react';
 import axios from 'axios'
 
-const FilterCountries = ({ onChange }) => {
-  return (
-    <div>
-      find countries <input onChange={onChange}/>
-    </div>
-  )
-}
-
-const ShowCountries = ({ countries }) => {
-  if (countries.length > 10 || countries.length ===0){
+const ShowCountries = ({ countries, onClick }) => {
+  if (countries.length > 10 ){
     return (
       <span>Too many matches, specify another filter</span>
     )
@@ -21,7 +13,12 @@ const ShowCountries = ({ countries }) => {
     return (
       <div>
         {countries.map( country => (
-          <ShowCountryName key={country.name} name={country.name}/>
+          <div key={country.name}>
+            <ShowCountryName  name={country.name}/>
+            <button onClick={() => onClick(country)}>
+              show
+            </button>
+          </div>
         ))}
       </div>
     )
@@ -40,11 +37,18 @@ const ShowCountries = ({ countries }) => {
 
 const ShowCountryName = ({ name }) => {
   return (
-    <span>{name}<br/></span>
+    <span>{name}</span>
   )
 }
 
 const ShowCountry = ({ country }) => {
+  //console.log('ShowCountry', country)
+  if (country === undefined){
+    return (
+      <span></span>
+    )
+  }
+
   return( 
   <div>
     <h1>{country.name}</h1>
@@ -73,6 +77,7 @@ const ShowLanguage = ({ language }) => {
 const App = () => {
   const [allCountries, setAllCountries] = useState([])
   const [showCountries, setShowCountries] = useState([])
+  const [showCountry, setCountry] = useState()
   //const [newFilter, setNewFilter] = useState('')
 
   
@@ -91,10 +96,16 @@ const App = () => {
     )
   }
 
+  const handleNewCountry = (country) => {
+    return (
+    setCountry(country)
+  )}
+
   return (
     <div>
-      <FilterCountries onChange={handleNewFilter}/>
-      <ShowCountries countries={showCountries}/>
+      find countries <input onChange={handleNewFilter}/><br/>
+      <ShowCountries countries={showCountries} onClick={handleNewCountry}/>
+      <ShowCountry country={showCountry}/>
     </div>
   )
 }
