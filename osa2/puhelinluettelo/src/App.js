@@ -1,22 +1,12 @@
 // 2.11+
 import React, { useEffect, useState } from 'react'
-import axios from 'axios'
+import personService from './services/web'
 
 const Person = ({ person }) => {
     return (
         <div>
             {person.name} {person.number}
         </div>
-    )
-}
-
-const Persons = ({ persons }) => {
-    return (
-      <div>
-        {persons.map( person =>
-            <Person key={person.name} person={person}/> 
-        )}
-      </div>
     )
 }
 
@@ -28,20 +18,6 @@ const Filter = ({ onChange }) => {
     )
 }
 
-const PersonForm = (props) => {
-    return (
-      <form onSubmit={props.addPerson}>
-        <div>
-          name: <input value={props.newName} onChange={props.HandleNameChange}/><br/>
-          number: <input value={props.newNumber} onChange={props.HandleNumberChange}/>
-        </div>
-        <div>
-          <button type="submit">add</button>
-        </div>
-      </form>
-    ) 
-}
-
 const App = () => {
   const [ persons, setPersons] = useState([])
   const [ newName, setNewName ] = useState('')
@@ -49,10 +25,10 @@ const App = () => {
   const [ newFilter, setNewFilter] = useState('')
 
   useEffect(() => {
-    axios
-      .get('http://localhost:3001/persons')
+    personService
+      .getAll()
       .then(response => {
-        setPersons(response.data)
+        setPersons(response)
       })
   }, [])
 
@@ -84,8 +60,12 @@ const App = () => {
           setNewName('')
           alert(`${newName} is already added to phonebook`)
         } else {
-          setPersons(persons.concat(personObject))
-          setNewName('')
+          personService
+            .create(personObject)
+            .then(returnedPerson => {
+              setPersons(persons.concat(returnedPerson))
+              setNewName('')
+            })
         }
         setNewNumber('')
       }
@@ -102,9 +82,22 @@ const App = () => {
       <h2>Phonebook</h2>
       <Filter onChange={HandleFilterChange}/>
       <h2>Add new</h2>
-      <PersonForm addPerson={addPerson} newName={newName} HandleNameChange={HandleNameChange} newNumber={newNumber} HandleNumberChange={HandleNumberChange}/>
+      <form onSubmit={addPerson}>
+        <div>
+          name: <input value={newName} onChange={HandleNameChange}/><br/>
+          number: <input value={newNumber} onChange={HandleNumberChange}/>
+        </div>
+        <div>
+          <button type="submit">add</button>
+        </div>
+      </form>
       <h2>Numbers</h2>
-      <Persons persons={phonesToShow}/>
+      {phonesToShow.map( person =>
+            <Person 
+              key={person.name} 
+              person={person}
+            /> 
+      )}
     </div>
   )
 

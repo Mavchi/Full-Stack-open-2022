@@ -1,4 +1,4 @@
-// 2.12
+// 2.13
 import React, {useState, useEffect} from 'react';
 import axios from 'axios'
 
@@ -74,12 +74,24 @@ const ShowLanguage = ({ language }) => {
   )
 }
 
+const ShowWeather = ({ country, api_key }) => {
+  if (country === undefined){
+    return (' ')
+  }
+  return (
+    <div>
+      <h3>Weather in {country}</h3>
+    </div>
+  )
+}
+
 const App = () => {
   const [allCountries, setAllCountries] = useState([])
   const [showCountries, setShowCountries] = useState([])
   const [showCountry, setCountry] = useState()
+  const [showWeather, setWeather] = useState()
+  const api_key = process.env.REACT_APP_API_KEY
   //const [newFilter, setNewFilter] = useState('')
-
   
   useEffect(() => {
       axios
@@ -89,6 +101,16 @@ const App = () => {
         })
   }, [])
 
+  const getWeatherData = (country) => {
+    console.log('getWeatherData:  ', 'http://api.weatherstack.com/current?access_key=' + api_key + '&query=' + showCountry.name)
+    return (
+      axios
+        .get('http://api.weatherstack.com/current?access_key=' + api_key + '&query=' + country)
+        .then( response => 
+          setWeather(response))
+    )
+  }
+
   const handleNewFilter = (event) => {
     return (
       //setNewFilter(event.target.value)
@@ -97,15 +119,15 @@ const App = () => {
   }
 
   const handleNewCountry = (country) => {
-    return (
     setCountry(country)
-  )}
+  }
 
   return (
     <div>
       find countries <input onChange={handleNewFilter}/><br/>
       <ShowCountries countries={showCountries} onClick={handleNewCountry}/>
       <ShowCountry country={showCountry}/>
+      <ShowWeather country={showWeather}/>
     </div>
   )
 }
