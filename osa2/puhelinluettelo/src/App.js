@@ -1,6 +1,8 @@
 // 2.18+
 import React, { useEffect, useState } from 'react'
 import personService from './services/web'
+import Message from './components/messages'
+import './index.css'
 
 const Person = ({ person, handleDelete }) => {
     return (
@@ -11,19 +13,14 @@ const Person = ({ person, handleDelete }) => {
     )
 }
 
-const Filter = ({ onChange }) => {
-    return (
-        <p>
-            filter shown with <input onChange={onChange} />
-        </p>
-    )
-}
-
 const App = () => {
   const [ persons, setPersons] = useState([])
   const [ newName, setNewName ] = useState('')
   const [ newNumber, setNewNumber] = useState('')
   const [ newFilter, setNewFilter] = useState('')
+
+  const [ successMessage, setSuccessMessage] = useState(null)
+  const [ errorMessage, setErrorMessage] = useState(null)
 
   useEffect(() => {
     personService
@@ -66,6 +63,10 @@ const App = () => {
               .update(changedPerson.id, changedPerson)
               .then( returnedPerson => {
                 setPersons(persons.map( person => person.name !== changedPerson.name ? person : returnedPerson))
+                setSuccessMessage(`Updated ${personObject.name}`)
+                setTimeout(() => {
+                  setSuccessMessage(null)
+                }, 5000)
               })
           }
         } else {
@@ -74,6 +75,10 @@ const App = () => {
             .then(returnedPerson => {
               setPersons(persons.concat(returnedPerson))
               setNewName('')
+              setSuccessMessage(`Added ${personObject.name}`)
+              setTimeout(() => {
+                setSuccessMessage(null)
+              }, 5000)
             })
         }
         setNewNumber('')
@@ -84,6 +89,12 @@ const App = () => {
     const person = persons.find( n => n.name === name)
     if( window.confirm(`Delete ${person.name}?`)){
       personService.deleteNode(person.id)
+        .then(response => {
+          setSuccessMessage(`Removed ${person.name}`)
+          setTimeout(() => {
+            setSuccessMessage(null)
+          }, 5000)
+        })
       setPersons(persons.filter(n => n.name !== name))
     }
   }
@@ -97,7 +108,9 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
-      <Filter onChange={HandleFilterChange}/>
+      <Message message={successMessage} type='success'/>
+      <Message message={errorMessage} type='error'/>
+      filter shown with <input onChange={HandleFilterChange} />
       <h2>Add new</h2>
       <form onSubmit={addPerson}>
         <div>
