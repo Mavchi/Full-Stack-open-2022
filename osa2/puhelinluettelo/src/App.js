@@ -1,4 +1,4 @@
-// 2.18+
+// 2.20+
 import React, { useEffect, useState } from 'react'
 import personService from './services/web'
 import Message from './components/messages'
@@ -93,6 +93,12 @@ const App = () => {
           setSuccessMessage(`Removed ${person.name}`)
           setTimeout(() => {
             setSuccessMessage(null)
+          }, 5000)
+        })
+        .catch(error => {
+          setErrorMessage(`Information of ${person.name} has already been removed from server`)
+          setTimeout(() => {
+            setErrorMessage(null)
           }, 5000)
         })
       setPersons(persons.filter(n => n.name !== name))

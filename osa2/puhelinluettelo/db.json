@@ -21,9 +21,14 @@
       "id": 4
     },
     {
-      "name": "Aleksi K",
-      "number": "040-123456",
+      "name": "Aleksi",
+      "number": "123",
       "id": 5
+    },
+    {
+      "name": "Aleksi",
+      "number": "456",
+      "id": 6
     }
   ]
 }
