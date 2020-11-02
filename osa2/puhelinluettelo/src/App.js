@@ -1,4 +1,4 @@
-// 2.11+
+// 2.18+
 import React, { useEffect, useState } from 'react'
 import personService from './services/web'
 
@@ -59,7 +59,15 @@ const App = () => {
         // Lisätään jos ei ole valmiiksi taulukossa
         if (names.includes(personObject.name)){
           setNewName('')
-          alert(`${newName} is already added to phonebook`)
+          if (window.confirm(`${personObject.name} is already added to phonebook, replace the old number with a new one?`)){
+            const person = persons.find( n => n.name === personObject.name)
+            const changedPerson = {...person, number: personObject.number}
+            personService
+              .update(changedPerson.id, changedPerson)
+              .then( returnedPerson => {
+                setPersons(persons.map( person => person.name !== changedPerson.name ? person : returnedPerson))
+              })
+          }
         } else {
           personService
             .create(personObject)
