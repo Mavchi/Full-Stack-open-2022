@@ -2,10 +2,11 @@
 import React, { useEffect, useState } from 'react'
 import personService from './services/web'
 
-const Person = ({ person }) => {
+const Person = ({ person, handleDelete }) => {
     return (
         <div>
-            {person.name} {person.number}
+            {person.name} {person.number} 
+            <button onClick={handleDelete}>delete</button>
         </div>
     )
 }
@@ -71,6 +72,14 @@ const App = () => {
       }
   }
 
+  const handleDeleteOf = name => {
+    const person = persons.find( n => n.name === name)
+    if( window.confirm(`Delete ${person.name}?`)){
+      personService.deleteNode(person.id)
+      setPersons(persons.filter(n => n.name !== name))
+    }
+  }
+
   // Mitkä numerot näytetään
   const phonesToShow = (newFilter.length === 0) 
     ? persons 
@@ -96,7 +105,8 @@ const App = () => {
             <Person 
               key={person.name} 
               person={person}
-            /> 
+              handleDelete={() => handleDeleteOf(person.name)}
+            />
       )}
     </div>
   )
