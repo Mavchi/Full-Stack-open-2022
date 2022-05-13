@@ -1,71 +1,64 @@
 import react from 'react'
+import Course from './compotents/Course'
 
-const Header = (props) => {
-  return (
-    <h1>{
-      props.course}
-    </h1>
-  )
-}
-
-const Part = (props) => {
-  //console.log(props)
-  return (
-    <p>
-      {props.part.name} {props.part.exercises}
-    </p>
-  )
-}
-
-const Content = ({ parts }) => {
-  //console.log(props.parts[0])
-  return (
-    <div>
-      {parts.map(part => 
-        <Part key={part.name} part={part} />
-      )}
-
-      <Total parts={parts} />
-    </div>
-  )
-}
-
-const Total = ({parts }) => {
-  let getSum = parts.reduce((accum,obj) => accum + obj.exercises)
-  return (
-    <p>
-      total of {
-        parts.reduce((accum,obj) => accum + obj.exercises, 0)
-      }
-    </p>
-  )
-}
+const PageTitle = ({ label }) => <h2>{label}</h2>
 
 const App = () => {
-  const course = 'Half Stack application development'
-  const parts = [
+  const courses = [
     {
-      name: 'Fundamentals of React',
-      exercises: 10
-    }, 
+      name: 'Half Stack application development',
+      id: 1,
+      parts: [
+        {
+          name: 'Fundamentals of React',
+          exercises: 10,
+          id: 1
+        },
+        {
+          name: 'Using props to pass data',
+          exercises: 7,
+          id: 2
+        },
+        {
+          name: 'State of a component',
+          exercises: 14,
+          id: 3
+        },
+        {
+          name: 'Redux',
+          exercises: 11,
+          id: 4
+        }
+      ]
+    },
     {
-      name: 'Using props to pass data',
-      exercises: 7
-    }, 
-    {
-      name: 'State of a component',
-      exercises: 14
-    }, 
-    {
-      name: 'Redux',
-      exercises: 11,
+      name: 'Node.js',
+      id: 2,
+      parts: [
+        {
+          name: 'Routing',
+          exercises: 3,
+          id: 1
+        },
+        {
+          name: 'Middlewares',
+          exercises: 7,
+          id: 2
+        }
+      ]
     }
   ]
 
   return (
     <div>
-      <Header course={course} />
-      <Content parts={parts} />
+      <PageTitle label="Web development curriculum" />
+      {courses.map(course =>
+        <Course
+          key="course.id"
+          course={course}
+        />
+      )}
+
     </div>
   )
 }
