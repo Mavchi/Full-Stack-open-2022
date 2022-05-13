@@ -1,10 +1,10 @@
 import { useState } from 'react'
 
 const Persons = ({persons}) => {
-  console.log(persons)
+  //console.log(persons)
   return (
     persons.map( person => 
-      <p>{person.name}</p>
+      <p key={person.name}>{person.name}</p>
     )
   )
 }
@@ -21,8 +21,16 @@ const App = () => {
     const newPerson = {
       name: newName,
     }
-    setPersons(persons.concat(newPerson))
-    setNewName('')
+    // see if input already stored
+    let count = persons.filter(person => person.name===newName)
+    if (count.length > 0){
+      alert(`${newName} is already added to phonebook`)
+      setNewName('')
+    }
+    else {
+      setPersons(persons.concat(newPerson))
+      setNewName('')
+    }
   }
 
   const handleChangeInput = (event) => {
