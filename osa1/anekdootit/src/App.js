@@ -11,8 +11,23 @@ const Anecdote = ({ anecdote }) => {
   //console.log(anecdote)
   return (
     <div>
+      <h3>Anecdote of the day</h3>
       <div>{anecdote.anecdote}</div>
       <div>has {anecdote.votes} votes</div>
+    </div>
+  )
+}
+
+const MostVoted = ({ anecdotes, most_voted_id }) => {
+  //console.log(most_voted_id)
+  if (most_voted_id === -1)
+    return null
+  
+  return (
+    <div>
+      <h3>Anecdote with most votes</h3>
+      {anecdotes[most_voted_id].anecdote}<br />
+      has {anecdotes[most_voted_id].votes} votes
     </div>
   )
 }
@@ -51,6 +66,7 @@ const App = () => {
 
   const [anecdotes, setAnecdotes] = useState(anecdotes_raw)
   const [selected, setSelected] = useState(0)
+  const [most_voted_id, setMostVotedId] = useState(0)
 
   const handleNextAnecdote = () => {
     setSelected(Math.floor(Math.random() * anecdotes.length))
@@ -64,6 +80,10 @@ const App = () => {
     ]
     updatedAnecdotes[selected].votes += 1
     setAnecdotes(updatedAnecdotes)
+
+    // onko suosituin anekdootti
+    if (updatedAnecdotes[selected].votes >= updatedAnecdotes[most_voted_id].votes || updatedAnecdotes[most_voted_id].votes === -1) 
+      setMostVotedId(selected)
   }
 
   return (
@@ -76,6 +96,10 @@ const App = () => {
       <Button
         handleClick={handleNextAnecdote}
         label={"next anecdote"}
+      />
+      <MostVoted
+        anecdotes={anecdotes}
+        most_voted_id ={most_voted_id}
       />
     </div>
   )
