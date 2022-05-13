@@ -1,4 +1,4 @@
-
+import react from 'react'
 
 const Header = (props) => {
   return (
@@ -9,7 +9,7 @@ const Header = (props) => {
 }
 
 const Part = (props) => {
-  console.log(props)
+  //console.log(props)
   return (
     <p>
       {props.part.name} {props.part.exercises}
