@@ -1,13 +1,8 @@
 import { useState } from 'react'
 
-const Persons = ({persons}) => {
-  //console.log(persons)
-  return (
-    persons.map( person => 
-      <p key={person.name}>{person.name} {person.number}</p>
-    )
-  )
-}
+import Header from './components/Header'
+import PersonForm from './components/PersonForm'
+import NumberList from './components/NumberList'
 
 const App = () => {
   const [persons, setPersons] = useState([
@@ -18,6 +13,7 @@ const App = () => {
   ])
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
+  const [filter, setNewFilter] = useState('')
 
   const handleNewName = (event) => {
     event.preventDefault()
@@ -26,8 +22,8 @@ const App = () => {
       number: newNumber,
     }
     // see if name already stored
-    let count = persons.filter(person => person.name===newName)
-    if (count.length > 0){
+    let count = persons.filter(person => person.name === newName)
+    if (count.length > 0) {
       alert(`${newName} is already added to phonebook`)
       setNewName('')
       setNewNumber('')
@@ -39,6 +35,13 @@ const App = () => {
     }
   }
 
+  const handleChangeFilter = (event) => {
+    //console.log(event.target.value)
+    return (
+      setNewFilter(event.target.value)
+    )
+  }
+
   const handleChangeName = (event) => {
     //console.log(event.target.value)
     setNewName(event.target.value)
@@ -48,22 +51,18 @@ const App = () => {
     setNewNumber(event.target.value)
   }
 
+
   return (
     <div>
-      <h2>Phonebook</h2>
-      <form>
-        <div>
-          name: <input value={newName} onChange={handleChangeName}/>
-        </div>
-        <div>
-          name: <input value={newNumber} onChange={handleChangeNumber}/>
-        </div>
-        <div>
-          <button onClick={handleNewName} type="submit">add</button>
-        </div>
-      </form>
-      <h2>Numbers</h2>
-      <Persons persons={persons} />
+      <Header input_value={filter} handleChange={handleChangeFilter} />
+      <PersonForm 
+        newName={newName}  
+        handleChangeName={handleChangeName}
+        newNumber={newNumber}
+        handleChangeNumber={handleChangeNumber}
+        handleNewName={handleNewName}
+      />
+      <NumberList persons={persons} filter={filter} />
     </div>
   )
 
