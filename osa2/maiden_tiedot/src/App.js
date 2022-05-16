@@ -1,38 +1,34 @@
-import {useState, useEffect} from 'react'
+// 2.13
+import React, {useState, useEffect} from 'react'
 import axios from 'axios'
-
-import Header from './components/Header'
+import Country from './components/Country'
 
 const App = () => {
   const [allCountries, setAllCountries] = useState([])
-  const [filter, setFilter] = useState('')
-
+  const [showCountries, setShowCountries] = useState([])
+  
+  // download all countries data from server
   useEffect(() => {
-    //console.log('fetching')
-    axios
-    .get('https://restcountries.com/v3.1/all')
-    .then(response => {
-      setAllCountries(response.data)
-    })
-    //console.log(allCountries)
+      axios
+        .get('https://restcountries.eu/rest/v2/all')
+        .then( response => {
+          setAllCountries(response.data)
+        })
   }, [])
 
-  const changeFilter = (event) => {
-    //console.log(event.target.value)
+  const handleNewFilter = (event) => {
     return (
-      setFilter(event.target.value)
+      //setNewFilter(event.target.value)
+      setShowCountries(allCountries.filter( country => country.name.toLowerCase().includes(event.target.value.toLowerCase())))
     )
   }
 
   return (
     <div>
-      <Header 
-        countries={allCountries} 
-        filter={filter}
-        changeFilter={changeFilter}
-        /> 
+      find countries <input onChange={handleNewFilter}/><br/>
+      <Country countries={showCountries}/>
     </div>
   )
 }
 
-export default App;
+export default App
