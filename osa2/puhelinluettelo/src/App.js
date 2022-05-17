@@ -5,19 +5,19 @@ import Header from './components/Header'
 import PersonForm from './components/PersonForm'
 import NumberList from './components/NumberList'
 
+import personService from './services/person'
+
 const App = () => {
   const [persons, setPersons] = useState([])
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [filter, setNewFilter] = useState('')
 
-  useEffect(() => {
-    console.log('effect')
-    axios
-      .get('http://localhost:3001/persons')
-      .then(response => {
-        console.log('promise fulfilled')
-        setPersons(response.data)
+  useEffect( () => {
+    personService
+      .getAll()
+      .then(initialPerson => {
+        setPersons(initialPerson)
       })
   }, [])
   console.log('render', persons.length, 'notes')
@@ -36,9 +36,13 @@ const App = () => {
       setNewNumber('')
     }
     else {
-      setPersons(persons.concat(newPerson))
-      setNewName('')
-      setNewNumber('')
+      personService
+        .create(newPerson)
+        .then(returnedPerson => {
+          setPersons(persons.concat(newPerson))
+          setNewName('')
+          setNewNumber('')
+        })
     }
   }
 
