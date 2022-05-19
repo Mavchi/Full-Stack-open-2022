@@ -1,34 +1,51 @@
-// 2.13
-import React, {useState, useEffect} from 'react'
 import axios from 'axios'
+import { useState, useEffect } from 'react'
+
+import Countries from './components/Countries'
 import Country from './components/Country'
 
-const App = () => {
+function App() {
   const [allCountries, setAllCountries] = useState([])
-  const [showCountries, setShowCountries] = useState([])
-  
-  // download all countries data from server
-  useEffect(() => {
-      axios
-        .get('https://restcountries.eu/rest/v2/all')
-        .then( response => {
-          setAllCountries(response.data)
-        })
-  }, [])
+  const [filter, setFilter] = useState('')
+  const [selectedCountry, setSelectedCountry] = useState(0)
 
-  const handleNewFilter = (event) => {
-    return (
-      //setNewFilter(event.target.value)
-      setShowCountries(allCountries.filter( country => country.name.toLowerCase().includes(event.target.value.toLowerCase())))
-    )
+  const getAllCountries = () => {
+    console.log('effect')
+    axios
+      .get('https://restcountries.com/v3.1/all')
+      .then(response => {
+        console.log('promise fullfilled')
+        setAllCountries(response.data)
+      })
   }
+  useEffect(getAllCountries, [])
+
+  const handleFilterChange = (event) => {
+    //console.log(allCountries)
+    setFilter(event.target.value)
+    setSelectedCountry(0)
+  }
+
+  const handleChoiseOfCountry = (country) =>{
+    // console.log('choise made', country.name.common)
+    setSelectedCountry(country)
+  }
+  
 
   return (
     <div>
-      find countries <input onChange={handleNewFilter}/><br/>
-      <Country countries={showCountries}/>
+      <div>
+        find countries 
+        <input value={filter} onChange={handleFilterChange} />  
+      </div>
+      {
+        selectedCountry === 0
+          ? <Countries allCountries={allCountries} filter={filter} handleChoiseOfCountry={handleChoiseOfCountry}/>
+          : <Country country={selectedCountry}/>
+      }
+      
     </div>
-  )
+  );
 }
 
-export default App
+export default App;
