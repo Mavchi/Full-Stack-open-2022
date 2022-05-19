@@ -9,9 +9,17 @@ const App = () => {
 	const handleAddNew = (event) => {
 		//console.log('handleAddNew')
 		event.preventDefault()
-		const newPerson = { name: newName}
-		setPersons(persons.concat(newPerson))
-		setNewName('')
+
+		// check if name already included in a list
+		if (persons.find(p => p.name === newName)){
+		// name is found in a list of names
+			alert(`${newName} is already added to phonebook`)
+		} else {
+		// new name to be added to a list of names
+			const newPerson = { name: newName }
+			setPersons(persons.concat(newPerson))
+			setNewName('')
+		}
 	}
 
 
