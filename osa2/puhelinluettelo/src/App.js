@@ -52,6 +52,18 @@ const App = () => {
 		}
 	}
 
+	const handleDelete = (person) => {
+		//console.log(person.id, " to be deleted")
+		if (window.confirm(`Delete ${person.name} ?`)) {
+			personService
+				.remove(person.id)
+				.then(response => {
+					console.log('deleted, r: ', response)
+					setPersons(persons.filter(p => p.id !== person.id))
+				})
+		}
+	}
+
 	const setNewFilter = (event) => {
 		//console.log('setting new value to filter', filter)
 		setFilter(event.target.value)
@@ -88,7 +100,10 @@ const App = () => {
 			/>
 			
 			<h2>Numbers</h2>
-			<Persons persons={shownContacts} />
+			<Persons 
+				persons={shownContacts} 
+				handleDelete={handleDelete}
+			/>
 		</div>
 	)
 
