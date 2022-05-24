@@ -94,6 +94,13 @@ const App = () => {
 						setSuccessNotification(null)
 					}, 5000)
 				})
+				.catch(error => {
+					// tell about failure
+					setErrorNotification(`Infomation of ${person.name} has already been removed from server`)
+					setTimeout(() => {
+						setErrorNotification(null)
+					}, 5000)
+				})
 		}
 	}
 
