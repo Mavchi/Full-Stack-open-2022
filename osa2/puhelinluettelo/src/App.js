@@ -4,6 +4,7 @@ import axios from 'axios'
 import Filter from './components/Filter'
 import PersonForm from './components/PersonForm'
 import Persons from './components/Persons'
+import Notification from './components/Notification'
 
 import personService from './services/personService'
 
@@ -13,6 +14,8 @@ const App = () => {
 	const [newName, setName] = useState('')
 	const [newNumber, setNumber] = useState('')
 	const [filter, setFilter] = useState('')
+	const [successNotification, setSuccessNotification] = useState(null)
+	const [errorNotification, setErrorNotification] = useState(null)
 
 	useEffect(() => {
 		personService
@@ -41,6 +44,11 @@ const App = () => {
 						setPersons(persons.map(person => person.id !== updatedPerson ? person : returnedPerson))
 						setName('')
 						setNumber('')
+						// tell about success
+						setSuccessNotification(`Updated number of ${returnedPerson.name}`)
+						setTimeout(() => {
+							setSuccessNotification(null)
+						}, 5000)
 					})
 					.catch(error => {
 						console.log('Couldnt update', updatedPerson.name)
@@ -56,10 +64,15 @@ const App = () => {
 			}
 			personService
 				.create(newPerson)
-				.then(returnedPersons => {
-					setPersons(persons.concat(returnedPersons))
+				.then(returnedPerson => {
+					setPersons(persons.concat(returnedPerson))
 					setName('')
 					setNumber('')
+					// tell about success
+					setSuccessNotification(`Added ${returnedPerson.name}`)
+					setTimeout(() => {
+						setSuccessNotification(null)
+					}, 5000)
 				})
 				.catch(error => {
 					console.log('Coulndt add person to db')
@@ -75,6 +88,11 @@ const App = () => {
 				.then(response => {
 					console.log('deleted, r: ', response)
 					setPersons(persons.filter(p => p.id !== person.id))
+					// tell about success
+					setSuccessNotification(`Deleted ${person.name}`)
+					setTimeout(() => {
+						setSuccessNotification(null)
+					}, 5000)
 				})
 		}
 	}
@@ -100,6 +118,8 @@ const App = () => {
 	return (
 		<div>
 			<h2>Phonebook</h2>
+			<Notification type={'success'} message={successNotification} />
+			<Notification type={'error'} message={errorNotification} />
 			<Filter 
 				value={filter}
 				handleChange={(e) => setNewFilter(e)}
