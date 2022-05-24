@@ -5,6 +5,8 @@ import Filter from './components/Filter'
 import PersonForm from './components/PersonForm'
 import Persons from './components/Persons'
 
+import personService from './services/personService'
+
 const App = () => {
 	const [persons, setPersons] = useState([])
 
@@ -13,15 +15,14 @@ const App = () => {
 	const [filter, setFilter] = useState('')
 
 	useEffect(() => {
-		//console.log('effect')
-
-		const eventHandler = response =>{
-			//console.log('promise fullfilled')
-			setPersons(response.data)
-		}
-
-		const promise = axios.get('http://localhost:3001/persons')
-		promise.then(eventHandler)
+		personService
+			.getAll()
+			.then(initialPersons => {
+				setPersons(initialPersons)
+			})
+			.catch(error => {
+				alert("Couldn't download data from server")
+			})
 	}, [])
 
 	const handleAddNew = (event) => {
@@ -38,9 +39,16 @@ const App = () => {
 				name: newName,
 				number: newNumber,
 			}
-			setPersons(persons.concat(newPerson))
-			setName('')
-			setNumber('')
+			personService
+				.create(newPerson)
+				.then(returnedPersons => {
+					setPersons(persons.concat(returnedPersons))
+					setName('')
+					setNumber('')
+				})
+				.catch(error => {
+					console.log('Coulndt add person to db')
+				})
 		}
 	}
 
