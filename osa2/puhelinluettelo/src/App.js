@@ -32,7 +32,22 @@ const App = () => {
 		// check if name already included in a list
 		if (persons.find(p => p.name === newName)){
 		// name is found in a list of names
-			alert(`${newName} is already added to phonebook`)
+			if (window.confirm(`${newName} is already added to phonebook, replace the old number with a new one?`)) {
+				const oldData = persons.find(p => p.name === newName)
+				const updatedPerson = {...oldData, number: newNumber}
+				personService
+					.update(updatedPerson.id, updatedPerson)
+					.then(returnedPerson => {
+						setPersons(persons.map(person => person.id !== updatedPerson ? person : returnedPerson))
+						setName('')
+						setNumber('')
+					})
+					.catch(error => {
+						console.log('Couldnt update', updatedPerson.name)
+					})
+				//console.log(newName, 'to be updated with ', newNumber)
+			}
+			
 		} else {
 		// new name to be added to a list of names
 			const newPerson = { 
@@ -77,7 +92,7 @@ const App = () => {
 		setNumber(event.target.value)
 	}
 
-	console.log(filter)
+	//console.log(filter)
 	const shownContacts = filter.length === 0
 		? persons
 		: persons.filter(person => person.name.toLocaleLowerCase().includes(filter.toLowerCase()))
