@@ -82,7 +82,7 @@ const App = () => {
     setAnecdotes(updatedAnecdotes)
 
     // onko suosituin anekdootti
-    if (updatedAnecdotes[selected].votes >= updatedAnecdotes[most_voted_id].votes || updatedAnecdotes[most_voted_id].votes === -1) 
+    if (most_voted_id === -1 || updatedAnecdotes[selected].votes >= updatedAnecdotes[most_voted_id].votes) 
       setMostVotedId(selected)
   }
 
