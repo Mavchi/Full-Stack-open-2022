@@ -1,7 +1,4 @@
-import react from 'react'
-import Course from './compotents/Course'
-
-const PageTitle = ({ label }) => <h2>{label}</h2>
+import Course from './components/Course'
 
 const App = () => {
   const courses = [
@@ -30,7 +27,7 @@ const App = () => {
           id: 4
         }
       ]
-    },
+    }, 
     {
       name: 'Node.js',
       id: 2,
@@ -51,14 +48,9 @@ const App = () => {
 
   return (
     <div>
-      <PageTitle label="Web development curriculum" />
-      {courses.map(course =>
-        <Course
-          key="course.id"
-          course={course}
-        />
+      {courses.map((course, i) => 
+        <Course key={i} course={course} />
       )}
-
     </div>
   )
 }
