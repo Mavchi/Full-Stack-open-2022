@@ -1,154 +1,132 @@
 import { useState, useEffect } from 'react'
-import axios from 'axios'
+import personService from './services/persons'
 
 import Filter from './components/Filter'
 import PersonForm from './components/PersonForm'
 import Persons from './components/Persons'
 import Notification from './components/Notification'
 
-import personService from './services/personService'
-
 const App = () => {
-	const [persons, setPersons] = useState([])
+  const [persons, setPersons] = useState([])
+  const [newName, setNewName] = useState('')
+  const [newNumber, setNewNumber] = useState('')
+  const [nameFilter, setNameFilter] = useState('')
+  const [message, setMessage] = useState(null)
 
-	const [newName, setName] = useState('')
-	const [newNumber, setNumber] = useState('')
-	const [filter, setFilter] = useState('')
-	const [successNotification, setSuccessNotification] = useState(null)
-	const [errorNotification, setErrorNotification] = useState(null)
+  useEffect(()=> {
+    personService
+      .getAll()
+      .then(initialPersons => setPersons(initialPersons))
+      .catch(error => console.log("Couldn't download contact information of people"))
+  }, [])
 
-	useEffect(() => {
-		personService
-			.getAll()
-			.then(initialPersons => {
-				setPersons(initialPersons)
-			})
-			.catch(error => {
-				alert("Couldn't download data from server")
-			})
-	}, [])
+  const handleValueOfName = (event) => setNewName(event.target.value)
+  const handleValueOfNumber = (event) => setNewNumber(event.target.value)
+  const handleValueOFilter = (event) => setNameFilter(event.target.value)
+  const handleRemovingPerson = (id) => {
+    return () => {
+      personService
+        .remove(id)
+        .then(response => {
+          const newError = {
+            text: `Person ${persons.find(person => person.id === id).name} was removed`,
+            type: 'success'
+          }
+          setPersons(persons.filter(person => person.id !== id))
+          setMessage(newError)
+          setTimeout(() => setMessage(null), 5000)
+        })
+        .catch(error => {
+          const newError = {
+            text: `Information of ${persons.find(person => person.id === id).name} was already removed`,
+            type: 'error'
+          }
+          setPersons(persons.filter(person => person.id !== id))
+          setMessage(newError)
+          setTimeout(() => setMessage(null), 5000)
+        })
+    }
+  }
 
-	const handleAddNew = (event) => {
-		//console.log('handleAddNew')
-		event.preventDefault()
+  const handleAddingPerson = (event) => {
+    event.preventDefault()
+    const newPerson = { 
+      name: newName, 
+      number: newNumber,
+      id: Math.max(persons.map(person => person.id))+1
+    }
+    
+    if (persons.some(person => person.name === newName)) {
+      if (window.confirm(`${newName} is alredy added to phonebook, replace the old number with a new one?`)) {
+        newPerson.id = persons.find(person => person.name === newName).id
+        personService
+          .update(newPerson)
+          .then(returnedPerson => {
+            const newMessage = {
+              text: `Updated number of ${returnedPerson.name}`,
+              type: 'success'
+            }
+            setMessage(newMessage)
+            setPersons(persons.map(person => person.id !== returnedPerson.id ? person : returnedPerson))
+            setTimeout(() => setMessage(null), 5000)
+          })
+          .catch(error => {
+            const newMessage = {
+              text: `Information of ${newPerson.name} has already been removed from server`,
+              type: 'error'
+            }
+            setMessage(newMessage)
+            setTimeout(() => setMessage(null), 5000)
+            setPersons(persons.filter(person => person.name !== newPerson.name))
+          })
+      }
+      return
+    }
 
-		// check if name already included in a list
-		if (persons.find(p => p.name === newName)){
-		// name is found in a list of names
-			if (window.confirm(`${newName} is already added to phonebook, replace the old number with a new one?`)) {
-				const oldData = persons.find(p => p.name === newName)
-				const updatedPerson = {...oldData, number: newNumber}
-				personService
-					.update(updatedPerson.id, updatedPerson)
-					.then(returnedPerson => {
-						setPersons(persons.map(person => person.id !== updatedPerson ? person : returnedPerson))
-						setName('')
-						setNumber('')
-						// tell about success
-						setSuccessNotification(`Updated number of ${returnedPerson.name}`)
-						setTimeout(() => {
-							setSuccessNotification(null)
-						}, 5000)
-					})
-					.catch(error => {
-						console.log('Couldnt update', updatedPerson.name)
-					})
-				//console.log(newName, 'to be updated with ', newNumber)
-			}
-			
-		} else {
-		// new name to be added to a list of names
-			const newPerson = { 
-				name: newName,
-				number: newNumber,
-			}
-			personService
-				.create(newPerson)
-				.then(returnedPerson => {
-					setPersons(persons.concat(returnedPerson))
-					setName('')
-					setNumber('')
-					// tell about success
-					setSuccessNotification(`Added ${returnedPerson.name}`)
-					setTimeout(() => {
-						setSuccessNotification(null)
-					}, 5000)
-				})
-				.catch(error => {
-					console.log('Coulndt add person to db')
-				})
-		}
-	}
+    personService
+      .add(newPerson)
+      .then(returnedPerson => {
+        const newMessage = {
+          text: `Added ${returnedPerson.name}`,
+          type: 'success'
+        }
+        setMessage(newMessage)
+        setTimeout(() => setMessage(null), 5000)
+        setPersons(persons.concat(returnedPerson))
+        setNewName('')
+        setNewNumber('')
+      })
+      .catch(error =>{
+        const newMessage = {
+          text: `Couldn't add ${newPerson.name}`,
+          type: 'error'
+        }
+        setMessage(newMessage)
+        setTimeout(() => setMessage(null), 5000)
+      })
+  }
 
-	const handleDelete = (person) => {
-		//console.log(person.id, " to be deleted")
-		if (window.confirm(`Delete ${person.name} ?`)) {
-			personService
-				.remove(person.id)
-				.then(response => {
-					console.log('deleted, r: ', response)
-					setPersons(persons.filter(p => p.id !== person.id))
-					// tell about success
-					setSuccessNotification(`Deleted ${person.name}`)
-					setTimeout(() => {
-						setSuccessNotification(null)
-					}, 5000)
-				})
-				.catch(error => {
-					// tell about failure
-					setErrorNotification(`Infomation of ${person.name} has already been removed from server`)
-					setTimeout(() => {
-						setErrorNotification(null)
-					}, 5000)
-				})
-		}
-	}
+  const filteredPersons = persons.filter(person => 
+    person.name.toLowerCase().includes(nameFilter.toLowerCase())
+  )
 
-	const setNewFilter = (event) => {
-		//console.log('setting new value to filter', filter)
-		setFilter(event.target.value)
-	}
-
-	const setNewName = (event) => {
-		setName(event.target.value)
-	}
-
-	const setNewNumber = (event) => {
-		setNumber(event.target.value)
-	}
-
-	//console.log(filter)
-	const shownContacts = filter.length === 0
-		? persons
-		: persons.filter(person => person.name.toLocaleLowerCase().includes(filter.toLowerCase()))
-
-	return (
-		<div>
-			<h2>Phonebook</h2>
-			<Notification type={'success'} message={successNotification} />
-			<Notification type={'error'} message={errorNotification} />
-			<Filter 
-				value={filter}
-				handleChange={(e) => setNewFilter(e)}
-			/>
-
-			<h3>add a new</h3>
-			<PersonForm 
-				newName={newName}
-				newNumber={newNumber}
-				handleChangeOfName={((e) => setNewName(e))}
-				handleChangeOfNumber={((e) => setNewNumber(e))}
-				handleAddNew={handleAddNew}
-			/>
-			
-			<h2>Numbers</h2>
-			<Persons 
-				persons={shownContacts} 
-				handleDelete={handleDelete}
-			/>
-		</div>
-	)
-
+  return (
+    <div>
+      <h2>Phonebook</h2>
+      <Notification message={message} />
+      <Filter filter={nameFilter} handleChange={handleValueOFilter} />
+      <h2>add a new</h2>
+      <PersonForm  
+        name={newName} 
+        handleChangeOfName={handleValueOfName} 
+        number={newNumber}
+        handleChangeOfNumber={handleValueOfNumber}
+        handleAddingPerson={handleAddingPerson}
+      />
+      <h2>Numbers</h2>
+      <Persons persons={filteredPersons} handleDelete={handleRemovingPerson} />
+    </div>
+  )
 }
 
 export default App
