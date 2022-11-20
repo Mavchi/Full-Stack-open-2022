@@ -1,49 +1,49 @@
-import axios from 'axios'
 import { useState, useEffect } from 'react'
+import axios from 'axios'
 
+import Filter from './components/Filter'
 import Countries from './components/Countries'
 import Country from './components/Country'
 
-function App() {
-  const [allCountries, setAllCountries] = useState([])
+const App = () => {
+  const [countries, setCountries] = useState([])
   const [filter, setFilter] = useState('')
-  const [selectedCountry, setSelectedCountry] = useState(0)
+  const [selectedCountry, setSelectedCountry] = useState(undefined)
 
-  const getAllCountries = () => {
-    console.log('effect')
+  useEffect(() => {
     axios
-      .get('https://restcountries.com/v3.1/all')
-      .then(response => {
-        console.log('promise fullfilled')
-        setAllCountries(response.data)
-      })
-  }
-  useEffect(getAllCountries, [])
+      .get('https://restcountries.com/v2/all')
+      .then(response => setCountries(response.data))
+  }, [])
 
-  const handleFilterChange = (event) => {
-    //console.log(allCountries)
-    setFilter(event.target.value)
-    setSelectedCountry(0)
+  useEffect(() => {
+    // if only one country is showing in filtered list, then
+    // it is to be viewed by the user
+    const filteredResult = countries.filter(country => country.name.toLowerCase().includes(filter.toLowerCase()))
+    if (filteredResult.length === 1) {
+      setSelectedCountry(filteredResult[0])
+    } else {
+      setSelectedCountry(undefined)
+    }
+  }, [countries, filter])
+
+  const handleValueOfFilter = (event) => setFilter(event.target.value)
+
+  const handleChoiseOfCountry = (country) => {
+    return () => setSelectedCountry(country)
   }
 
-  const handleChoiseOfCountry = (country) =>{
-    // console.log('choise made', country.name.common)
-    setSelectedCountry(country)
-  }
-  
+  const filteredCountries = filter.length === 0
+    ? []
+    : countries.filter(country => country.name.toLowerCase().includes(filter.toLowerCase()))
 
   return (
     <div>
-      <div>
-        find countries 
-        <input value={filter} onChange={handleFilterChange} />  
-      </div>
-      {
-        selectedCountry === 0
-          ? <Countries allCountries={allCountries} filter={filter} handleChoiseOfCountry={handleChoiseOfCountry}/>
-          : <Country country={selectedCountry}/>
+      <Filter value={filter} handleChange={handleValueOfFilter} />
+      {filteredCountries.length > 0 && !selectedCountry
+        ? <Countries countries={filteredCountries} handleChoise={handleChoiseOfCountry} />
+        : <Country country={selectedCountry} />
       }
-      
     </div>
   );
 }

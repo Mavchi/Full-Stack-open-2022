@@ -1,26 +1,24 @@
-const Countries = ({ allCountries, filter, handleChoiseOfCountry }) => {
-	const showCountries = allCountries.filter(country => country.name.common.toLowerCase().includes(filter.toLowerCase()))
 
-	if (showCountries.length > 10 || filter.length === 0) {
-		return (
-			<div>Too many matches, specify another filter</div>
-		)
-	} else {
-		return (
-			<div>
-				{
-					showCountries.map(country => <div key={country.name.common}>{country.name.common} <button onClick={() => handleChoiseOfCountry(country)}>show</button></div>)
-				}
-			</div>
-		)
-	}
+
+const Countries = ({ countries, handleChoise }) =>{
+    if (countries.length === 0) {
+        return (
+            'Not found.'
+        )
+    }
+
+    return (
+        <div>
+        {countries.length > 10
+          ? 'Too many matches, specify another filter'
+          : countries.map((country,i) => 
+            <div key={i}>
+                {country.name} <button onClick={handleChoise(country)}>show</button><br />
+            </div>
+        )
+        }
+        </div>
+    )
 }
 
 export default Countries
-
-/*
-let countries = allCountries
-if (filter.length === 0) {
-	const countries = allCountries.filter(country => country.name.toLocaleLowerCase().includes(filter.toLowerCase()))
-}
-*/

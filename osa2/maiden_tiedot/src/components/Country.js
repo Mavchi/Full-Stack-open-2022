@@ -2,46 +2,45 @@ import { useState, useEffect } from 'react'
 import axios from 'axios'
 
 const Country = ({ country }) => {
-    const [weather, setWeather] = useState(null)
-    const api_key = process.env.REACT_APP_API_KEY
+	const [weatherData, setWeatherData] = useState(null)
+	
+	useEffect(() => {
+		if (!country) {
+			return
+		}
+		const lat = country.latlng[0]
+		const lon = country.latlng[1]
+		const API_key = process.env.REACT_APP_API_KEY
+		const baseUrl = `https://api.openweathermap.org/data/3.0/onecall?lat=${lat}&lon=${lon}&units=metric&appid=${API_key}`
+		
+		axios
+			.get(baseUrl)
+			.then(response => setWeatherData(response.data))
+	}, [country])
+	
+	if (!country || !weatherData) {
+		return
+	}
 
-    const downloadWeather = (country) => {
-        //console.log('downloading weather', weather)
-        axios
-            .get(`http://api.weatherstack.com/current?access_key=${api_key}&query=${country.name}`)
-            .then(response => {
-                setWeather(response.data)
-            })
-            .catch(error =>
-                console.log('couldnt download weather data')
-            )
-    }
+	return (
+		<div>
+			<h2>{country.name}</h2>
+			capital {country.capital} <br />
+			area {country.area} <br />
+			<h3>languages</h3>
+			<ul>
+				{country.languages.map((language,i) =>
+					<li key={i}>{language.name}</li>
+				)}
+			</ul>
+			<img src={country.flags.png} alt={`Flag of ${country.name}`} />
 
-    downloadWeather(country)
-    console.log(weather)
-
-    console.log('country selected: ', country)
-    return (
-        <div>
-            <h1>{country.name.common}</h1>
-            capital {country.capital}<br />
-            area {country.area}
-            <br />
-            <h4>Languages:</h4>
-            {JSON.stringify(country.languages)}
-            <br />
-            <br />
-            <img src={country.flags.png} alt="flag of a country" />
-            <h3>Weather in {weather.location.name}</h3>
-            <p>
-                <strong>temperature: </strong>{weather.current.temperature} Celcius<br />
-                <img height='100px' width='100px' alt='type of weather' src={weather.current.weather_icons[0]} /><br />
-                <strong>wind:</strong> {weather.current.wind_speed} mph direction {weather.current.wind_dir}
-            </p>
-        </div>
-    )
+			<h3>Weather in {country.capital}</h3>
+			temperature {weatherData.current.temp} Celcius <br />
+			<img src={`http://openweathermap.org/img/wn/${weatherData.current.weather[0].icon}@2x.png`} alt={`weather in ${country.capital}`} /> <br />
+			wind {weatherData.current.wind_speed} m/s
+		</div>
+	)
 }
 
 export default Country
-
-// {JSON.stringify(country.languages) }
